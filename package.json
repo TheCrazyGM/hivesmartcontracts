@@ -42,7 +42,7 @@
   "author": "Harpagon210 <harpagon210@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "@hiveio/dhive": "^1.3.5",
+    "@srbde/pollen": "^1.0.1",
     "axios": "^1.7.9",
     "bignumber.js": "^8.1.1",
     "body-parser": "^1.20.2",
@@ -72,7 +72,7 @@
     "eslint-plugin-jsx-a11y": "^6.10.2",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^4.6.2",
-    "mocha": "^11.7.5",
+    "mocha": "^12.0.0-beta-9.3",
     "terser": "^5.42.0"
   },
   "overrides": {

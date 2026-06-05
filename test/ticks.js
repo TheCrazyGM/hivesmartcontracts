@@ -1,7 +1,7 @@
 /* eslint-disable */
 const assert = require('assert').strict;
 const { MongoClient } = require('mongodb');
-const dhive = require('@hiveio/dhive');
+const pollen = require('@srbde/pollen');
 const enchex = require('crypto-js/enc-hex');
 
 const { CONSTANTS } = require('../libs/Constants');

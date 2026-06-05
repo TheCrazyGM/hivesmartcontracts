@@ -2,7 +2,7 @@
 const { fork } = require('child_process');
 const assert = require('assert').strict;
 const { MongoClient } = require('mongodb');
-const dhive = require('@hiveio/dhive');
+const pollen = require('@srbde/pollen');
 const SHA256 = require('crypto-js/sha256');
 const enchex = require('crypto-js/enc-hex');
 
@@ -1295,7 +1295,7 @@ describe('witnesses', function () {
       // register 100 witnesses
       for (let index = 0; index < 100; index++) {
         const witnessAccount = `witness${index}`;
-        const wif = dhive.PrivateKey.fromLogin(witnessAccount, 'testnet', 'active');
+        const wif = pollen.PrivateKey.fromLogin(witnessAccount, 'testnet', 'active');
         transactions.push(new Transaction(37899128, fixture.getNextTxId(), witnessAccount, 'witnesses', 'register', `{ "domain": "${witnessAccount}.com", "RPCPort": 5000, "P2PPort": 6000, "signingKey": "${wif.createPublic('TST').toString()}", "enabled": true, "isSignedWithActiveKey": true }`));
       }
 
@@ -1393,7 +1393,7 @@ console.log(res);
       // register 100 witnesses
       for (let index = 0; index < 100; index++) {
         const witnessAccount = `witness${index}`;
-        const wif = dhive.PrivateKey.fromLogin(witnessAccount, 'testnet', 'active');
+        const wif = pollen.PrivateKey.fromLogin(witnessAccount, 'testnet', 'active');
         transactions.push(new Transaction(37899120, fixture.getNextTxId(), witnessAccount, 'witnesses', 'register', `{ "IP": "123.123.123.${index}", "RPCPort": 5000, "P2PPort": 6000, "signingKey": "${wif.createPublic().toString()}", "enabled": true, "isSignedWithActiveKey": true }`));
       }
 
@@ -1507,7 +1507,7 @@ console.log(res);
 
       let signatures = [];
       schedules.forEach(schedule => {
-        const wif = dhive.PrivateKey.fromLogin(schedule.witness, 'testnet', 'active');
+        const wif = pollen.PrivateKey.fromLogin(schedule.witness, 'testnet', 'active');
         const sig = signPayload(wif, calculatedRoundHash, true)
         signatures.push([schedule.witness, sig])
       });
@@ -1542,7 +1542,7 @@ console.log(res);
         const queryRes = await fixture.database.getBlockInfo(blockNum);
 
         const blockFromNode = queryRes;
-        const wif = dhive.PrivateKey.fromLogin(blockFromNode.witness, 'testnet', 'active');
+        const wif = pollen.PrivateKey.fromLogin(blockFromNode.witness, 'testnet', 'active');
         assert.equal(blockFromNode.round, 2);
         assert.equal(blockFromNode.witness, schedules[schedules.length - 1].witness);
         assert.equal(blockFromNode.roundHash, calculatedRoundHash);
@@ -1578,7 +1578,7 @@ console.log(res);
       // register 100 witnesses
       for (let index = 0; index < 100; index++) {
         const witnessAccount = `witness${index}`;
-        const wif = dhive.PrivateKey.fromLogin(witnessAccount, 'testnet', 'active');
+        const wif = pollen.PrivateKey.fromLogin(witnessAccount, 'testnet', 'active');
         transactions.push(new Transaction(37899120, fixture.getNextTxId(), witnessAccount, 'witnesses', 'register', `{ "IP": "123.123.123.${index}", "RPCPort": 5000, "P2PPort": 6000, "signingKey": "${wif.createPublic().toString()}", "enabled": true, "isSignedWithActiveKey": true }`));
       }
 
@@ -1692,7 +1692,7 @@ console.log(res);
 
       let signatures = [];
       schedules.forEach(schedule => {
-        const wif = dhive.PrivateKey.fromLogin(schedule.witness, 'testnet', 'active');
+        const wif = pollen.PrivateKey.fromLogin(schedule.witness, 'testnet', 'active');
         const sig = signPayload(wif, calculatedRoundHash, true)
         signatures.push([schedule.witness, sig])
       });
@@ -1767,7 +1767,7 @@ console.log(res);
       // register 100 witnesses
       for (let index = 0; index < 100; index++) {
         const witnessAccount = `witness${index}`;
-        const wif = dhive.PrivateKey.fromLogin(witnessAccount, 'testnet', 'active');
+        const wif = pollen.PrivateKey.fromLogin(witnessAccount, 'testnet', 'active');
         transactions.push(new Transaction(37899120, fixture.getNextTxId(), witnessAccount, 'witnesses', 'register', `{ "IP": "123.123.123.${index}", "RPCPort": 5000, "P2PPort": 6000, "signingKey": "${wif.createPublic().toString()}", "enabled": true, "isSignedWithActiveKey": true }`));
       }
 
@@ -1881,7 +1881,7 @@ console.log(res);
 
       let signatures = [];
       schedules.forEach(schedule => {
-        const wif = dhive.PrivateKey.fromLogin(schedule.witness, 'testnet', 'active');
+        const wif = pollen.PrivateKey.fromLogin(schedule.witness, 'testnet', 'active');
         const sig = signPayload(wif, calculatedRoundHash, true)
         signatures.push([schedule.witness, sig])
       });
@@ -1916,7 +1916,7 @@ console.log(res);
         const queryRes = await fixture.database.getBlockInfo(blockNum);
 
         const blockFromNode = queryRes;
-        const wif = dhive.PrivateKey.fromLogin(blockFromNode.witness, 'testnet', 'active');
+        const wif = pollen.PrivateKey.fromLogin(blockFromNode.witness, 'testnet', 'active');
         assert.equal(blockFromNode.round, 2);
         assert.equal(blockFromNode.witness, schedules[schedules.length - 1].witness);
         assert.equal(blockFromNode.roundHash, calculatedRoundHash);
@@ -1951,7 +1951,7 @@ console.log(res);
       // register 100 witnesses
       for (let index = 0; index < 100; index++) {
         const witnessAccount = `witness${index}`;
-        const wif = dhive.PrivateKey.fromLogin(witnessAccount, 'testnet', 'active');
+        const wif = pollen.PrivateKey.fromLogin(witnessAccount, 'testnet', 'active');
         transactions.push(new Transaction(refBlockNumber, fixture.getNextTxId(), witnessAccount, 'witnesses', 'register', `{ "IP": "123.123.123.${index}", "RPCPort": 5000, "P2PPort": 6000, "signingKey": "${wif.createPublic().toString()}", "enabled": true, "isSignedWithActiveKey": true }`));
       }
 
@@ -2030,7 +2030,7 @@ console.log(res);
 
       const signatures = [];
       schedule.forEach(scheduleItem => {
-        const wif = dhive.PrivateKey.fromLogin(scheduleItem.witness, 'testnet', 'active');
+        const wif = pollen.PrivateKey.fromLogin(scheduleItem.witness, 'testnet', 'active');
         const sig = signPayload(wif, calculatedRoundHash, true)
         signatures.push([scheduleItem.witness, sig])
       });
@@ -2102,7 +2102,7 @@ console.log(params);
       // register 100 witnesses
       for (let index = 0; index < 100; index++) {
         const witnessAccount = `witness${index}`;
-        const wif = dhive.PrivateKey.fromLogin(witnessAccount, 'testnet', 'active');
+        const wif = pollen.PrivateKey.fromLogin(witnessAccount, 'testnet', 'active');
         transactions.push(new Transaction(99999999, fixture.getNextTxId(), witnessAccount, 'witnesses', 'register', `{ "IP": "123.123.123.${index}", "RPCPort": 5000, "P2PPort": 6000, "signingKey": "${wif.createPublic('TST').toString()}", "enabled": true, "isSignedWithActiveKey": true }`));
       }
 
@@ -2204,7 +2204,7 @@ console.log(changeBlock);
       // register 100 witnesses
       for (let index = 0; index < 100; index++) {
         const witnessAccount = `witness${index}`;
-        const wif = dhive.PrivateKey.fromLogin(witnessAccount, 'testnet', 'active');
+        const wif = pollen.PrivateKey.fromLogin(witnessAccount, 'testnet', 'active');
         transactions.push(new Transaction(99999999, fixture.getNextTxId(), witnessAccount, 'witnesses', 'register', `{ "IP": "123.123.123.${index}", "RPCPort": 5000, "P2PPort": 6000, "signingKey": "${wif.createPublic('TST').toString()}", "enabled": true, "isSignedWithActiveKey": true }`));
       }
 
@@ -2284,7 +2284,7 @@ console.log(changeBlock);
       }
 
       // current witness submits valid hash, and nobody else.
-      const wif = dhive.PrivateKey.fromLogin('witness6', 'testnet', 'active');
+      const wif = pollen.PrivateKey.fromLogin('witness6', 'testnet', 'active');
       const sig = signPayload(wif, calculatedRoundHash, true)
       const signatures = [['witness6', sig]];
 
@@ -2367,7 +2367,7 @@ console.log(changeBlock);
       // register 100 witnesses
       for (let index = 0; index < 100; index++) {
         const witnessAccount = `witness${index}`;
-        const wif = dhive.PrivateKey.fromLogin(witnessAccount, 'testnet', 'active');
+        const wif = pollen.PrivateKey.fromLogin(witnessAccount, 'testnet', 'active');
         transactions.push(new Transaction(99999999, fixture.getNextTxId(), witnessAccount, 'witnesses', 'register', `{ "IP": "123.123.123.${index}", "RPCPort": 5000, "P2PPort": 6000, "signingKey": "${wif.createPublic('TST').toString()}", "enabled": true, "isSignedWithActiveKey": true }`));
       }
 
@@ -2596,7 +2596,7 @@ console.log(changeBlock);
       // register 100 witnesses
       for (let index = 0; index < 100; index++) {
         const witnessAccount = `witness${index}`;
-        const wif = dhive.PrivateKey.fromLogin(witnessAccount, 'testnet', 'active');
+        const wif = pollen.PrivateKey.fromLogin(witnessAccount, 'testnet', 'active');
         transactions.push(new Transaction(99999999, fixture.getNextTxId(), witnessAccount, 'witnesses', 'register', `{ "IP": "123.123.123.${index}", "RPCPort": 5000, "P2PPort": 6000, "signingKey": "${wif.createPublic('TST').toString()}", "enabled": true, "isSignedWithActiveKey": true }`));
       }
 
@@ -2737,7 +2737,7 @@ console.log(params);
        // register 3000 witnesses
        for (let index = 0; index < 3000; index++) {
         const witnessAccount = `witness${index}`;
-        const wif = dhive.PrivateKey.fromLogin(witnessAccount, 'testnet', 'active');
+        const wif = pollen.PrivateKey.fromLogin(witnessAccount, 'testnet', 'active');
         transactions.push(new Transaction(99999999, fixture.getNextTxId(), witnessAccount, 'witnesses', 'register', `{ "IP": "${index % 32}.${index % 64}.${index % 128}.${index % 256}", "RPCPort": ${index}, "P2PPort": ${index}, "signingKey": "${wif.createPublic('TST').toString()}", "enabled": true, "isSignedWithActiveKey": true }`));
       }
       

@@ -4,7 +4,7 @@ const { Decimal128 } = require('bson');
 const ivm = require('isolated-vm');
 const SHA256FN = require('crypto-js/sha256');
 const enchex = require('crypto-js/enc-hex');
-const dhive = require('@hiveio/dhive');
+const pollen = require('@srbde/pollen');
 const { Base64 } = require('js-base64');
 const BigNumber = require('bignumber.js');
 const log = require('loglevel');
@@ -59,11 +59,11 @@ const ivmCheckSignature = new ivm.Reference((payloadToCheck, signature, publicKe
       || typeof signature !== 'string'
       || typeof publicKey !== 'string') return false;
   try {
-    const sig = dhive.Signature.fromString(signature);
+    const sig = pollen.Signature.fromString(signature);
     const finalPayload = typeof payloadToCheck === 'string' ? payloadToCheck : JSON.stringify(payloadToCheck);
     const payloadHash = isPayloadSHA256 === true ? finalPayload : SHA256FN(finalPayload).toString(enchex);
     const buffer = Buffer.from(payloadHash, 'hex');
-    return dhive.PublicKey.fromString(publicKey).verify(buffer, sig);
+    return pollen.PublicKey.fromString(publicKey).verify(buffer, sig);
   } catch (error) {
     return false;
   }

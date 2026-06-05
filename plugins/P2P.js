@@ -8,7 +8,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const SHA256 = require('crypto-js/sha256');
 const enchex = require('crypto-js/enc-hex');
-const dhive = require('@hiveio/dhive');
+const pollen = require('@srbde/pollen');
 const axios = require('axios');
 const net = require('net');
 const { Queue } = require('../libs/Queue');
@@ -57,7 +57,7 @@ const hiveClient = {
     };
 
     if (this.client === null) {
-      this.client = new dhive.Client(this.getHiveNode());
+      this.client = new pollen.Client(this.getHiveNode());
     }
 
     try {
@@ -123,7 +123,7 @@ const findOne = async (contract, table, query) => {
 
 const checkSignature = (payload, signature, publicKey, isPayloadSHA256 = false) => {
   try {
-    const sig = dhive.Signature.fromString(signature);
+    const sig = pollen.Signature.fromString(signature);
     let payloadHash;
 
     if (isPayloadSHA256 === true) {
@@ -136,7 +136,7 @@ const checkSignature = (payload, signature, publicKey, isPayloadSHA256 = false) 
 
     const buffer = Buffer.from(payloadHash, 'hex');
 
-    return dhive.PublicKey.fromString(publicKey).verify(buffer, sig);
+    return pollen.PublicKey.fromString(publicKey).verify(buffer, sig);
   } catch (error) {
     log.warn(error); // eslint-disable-line no-console
     return false;
@@ -514,7 +514,7 @@ const init = async (conf, callback) => {
     WITNESS_ACCOUNT = process.env.ACCOUNT || null;
     hiveClient.witnessAccount = WITNESS_ACCOUNT;
     SIGNING_KEY = process.env.ACTIVE_SIGNING_KEY
-      ? dhive.PrivateKey.fromString(process.env.ACTIVE_SIGNING_KEY)
+      ? pollen.PrivateKey.fromString(process.env.ACTIVE_SIGNING_KEY)
       : null;
     hiveClient.signingKey = SIGNING_KEY;
 

@@ -1,5 +1,5 @@
 const log = require('loglevel');
-const dhive = require('@hiveio/dhive');
+const pollen = require('@srbde/pollen');
 const { Queue } = require('../libs/Queue');
 const { Transaction } = require('../libs/Transaction');
 const { IPC } = require('../libs/IPC');
@@ -580,12 +580,12 @@ const initHiveClient = (streamNodes, node) => {
     if (!clients[n]) {
       // Keep the existing scheduler, but let each request fail over across
       // the full configured node list instead of hanging on a single RPC.
-      clients[n] = new dhive.Client(getOrderedStreamNodes(streamNodes, n));
+      clients[n] = new pollen.Client(getOrderedStreamNodes(streamNodes, n));
     }
   });
 
   if (!clients[node]) {
-    clients[node] = new dhive.Client(getOrderedStreamNodes(streamNodes, node));
+    clients[node] = new pollen.Client(getOrderedStreamNodes(streamNodes, node));
   }
   client = clients[node];
 };

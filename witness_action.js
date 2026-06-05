@@ -1,6 +1,6 @@
 require('dotenv').config();
 const axios = require('axios');
-const dhive = require('@hiveio/dhive');
+const pollen = require('@srbde/pollen');
 const program = require('commander');
 const { exec } = require('child_process');
 const packagejson = require('./package.json');
@@ -9,7 +9,7 @@ const config = require('./config.json');
 const ip = process.env.NODE_IP;
 const domain = process.env.NODE_DOMAIN;
 const witnessAccount = process.env.ACCOUNT;
-const privateSigningKey = dhive.PrivateKey.fromString(process.env.ACTIVE_SIGNING_KEY);
+const privateSigningKey = pollen.PrivateKey.fromString(process.env.ACTIVE_SIGNING_KEY);
 const publicSigningKey = privateSigningKey.createPublic().toString();
 const {
   rpcNodePort, p2pPort, streamNodes, chainId,
@@ -68,7 +68,7 @@ function awaitValidation(trxID, tries = 1) {
 }
 
 function broadcastWitnessAction(contractAction, contractPayload) {
-  const client = new dhive.Client(streamNodes[0]);
+  const client = new pollen.Client(streamNodes[0]);
   const transaction = {
     required_auths: [witnessAccount],
     required_posting_auths: [],
