@@ -18,6 +18,7 @@ let producing = false;
 let stopRequested = false;
 let hashVerificationNode = false;
 let enablePerUserTxLimit = true;
+let blockProcessingLock = false;
 
 const createGenesisBlock = async (payload) => {
   // check if genesis block hasn't been generated already
@@ -169,37 +170,48 @@ async function producePendingTransactions(
 
 const produceNewBlockSync = async (block, callback = null) => {
   if (stopRequested) return;
-  producing = true;
-  // the stream parsed transactions from the Hive blockchain
-  const {
-    refHiveBlockNumber, refHiveBlockId, prevRefHiveBlockId,
-    transactions, timestamp, virtualTransactions, replay,
-  } = block;
-  const newTransactions = [];
 
-  transactions.forEach((transaction) => {
-    const finalTransaction = transaction;
-
-    newTransactions.push(new Transaction(
-      finalTransaction.refHiveBlockNumber,
-      finalTransaction.transactionId,
-      finalTransaction.sender,
-      finalTransaction.contract,
-      finalTransaction.action,
-      finalTransaction.payload,
-    ));
-  });
-
-  // if there are transactions pending we produce a block
-  if (newTransactions.length > 0
-     || (virtualTransactions && virtualTransactions.length > 0) || replay) {
-    await producePendingTransactions(
-      refHiveBlockNumber, refHiveBlockId, prevRefHiveBlockId, newTransactions, timestamp,
-    );
+  // Wait if another block is being processed
+  while (blockProcessingLock) {
+    await new Promise(resolve => setTimeout(resolve, 10));
   }
-  producing = false;
 
-  if (callback) callback();
+  blockProcessingLock = true;
+  producing = true;
+
+  try {
+    // the stream parsed transactions from the Hive blockchain
+    const {
+      refHiveBlockNumber, refHiveBlockId, prevRefHiveBlockId,
+      transactions, timestamp, virtualTransactions, replay,
+    } = block;
+    const newTransactions = [];
+
+    transactions.forEach((transaction) => {
+      const finalTransaction = transaction;
+
+      newTransactions.push(new Transaction(
+        finalTransaction.refHiveBlockNumber,
+        finalTransaction.transactionId,
+        finalTransaction.sender,
+        finalTransaction.contract,
+        finalTransaction.action,
+        finalTransaction.payload,
+      ));
+    });
+
+    // if there are transactions pending we produce a block
+    if (newTransactions.length > 0
+       || (virtualTransactions && virtualTransactions.length > 0) || replay) {
+      await producePendingTransactions(
+        refHiveBlockNumber, refHiveBlockId, prevRefHiveBlockId, newTransactions, timestamp,
+      );
+    }
+  } finally {
+    producing = false;
+    blockProcessingLock = false;
+    if (callback) callback();
+  }
 };
 
 // when stopping, we wait until the current block is produced
@@ -232,7 +244,7 @@ const init = async (conf, callback) => {
   callback(null);
 };
 
-ipc.onReceiveMessage((message) => {
+ipc.onReceiveMessage(async (message) => {
   const {
     action,
     payload,
@@ -250,9 +262,8 @@ ipc.onReceiveMessage((message) => {
       ipc.reply(message);
     });
   } else if (action === PLUGIN_ACTIONS.PRODUCE_NEW_BLOCK_SYNC) {
-    produceNewBlockSync(payload, () => {
-      ipc.reply(message);
-    });
+    await produceNewBlockSync(payload);
+    ipc.reply(message);
   } else if (action && typeof actions[action] === 'function') {
     ipc.reply(message, actions[action](payload));
   } else {

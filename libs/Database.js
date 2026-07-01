@@ -285,9 +285,8 @@ class Database {
 
       return latestBlock;
     } catch (error) {
-      // eslint-disable-next-line no-console
-      log.error(error);
-      return null;
+      log.error(`Failed to get latest block info:`, error);
+      throw error;
     }
   }
 
@@ -303,9 +302,8 @@ class Database {
       }
       return latestBlock;
     } catch (error) {
-      // eslint-disable-next-line no-console
-      log.error(error);
-      return null;
+      log.error(`Failed to get latest block metadata:`, error);
+      throw error;
     }
   }
 
@@ -317,9 +315,8 @@ class Database {
 
       return block;
     } catch (error) {
-      // eslint-disable-next-line no-console
-      log.error(error);
-      return null;
+      log.error(`Failed to get block ${blockNumber}:`, error);
+      throw error;
     }
   }
 
@@ -331,9 +328,8 @@ class Database {
 
       return block;
     } catch (error) {
-      // eslint-disable-next-line no-console
-      log.error(error);
-      return null;
+      log.error(`Failed to get block by hive block ${blockNumber}:`, error);
+      throw error;
     }
   }
 
@@ -344,9 +340,8 @@ class Database {
         : null;
       return EJSON.serialize(blocks);
     } catch (error) {
-      // eslint-disable-next-line no-console
-      log.error(error);
-      return null;
+      log.error(`Failed to get block range ${startBlockNumber}-${startBlockNumber + count}:`, error);
+      throw error;
     }
   }
 
@@ -379,12 +374,11 @@ class Database {
           { $set: block }, { session: this.session },
         );
       } else {
-        // eslint-disable-next-line no-console
         log.error('verifyBlock', blockNumber, 'does not exist');
       }
     } catch (error) {
-      // eslint-disable-next-line no-console
-      log.error(error);
+      log.error(`Block verification failed for block ${payload.blockNumber}:`, error);
+      throw error;
     }
   }
 
@@ -412,9 +406,8 @@ class Database {
 
       return null;
     } catch (error) {
-      // eslint-disable-next-line no-console
-      log.error(error);
-      return null;
+      log.error(`Failed to find contract ${name}:`, error);
+      throw error;
     }
   }
 
@@ -468,6 +461,8 @@ class Database {
       const contract = await contracts.findOne({ _id, owner }, { session: this.session });
       if (contract !== null) {
         await contracts.updateOne({ _id }, { $set: payload }, { session: this.session });
+      } else {
+        log.warn(`Update contract had no effect: ${_id} - contract may not exist or owner mismatch`);
       }
     }
   }
@@ -717,9 +712,8 @@ class Database {
 
       return result;
     } catch (error) {
-      // eslint-disable-next-line no-console
-      log.error(error);
-      return null;
+      log.error(`Find operation failed for ${payload.contract}.${payload.table}:`, error);
+      throw error;
     }
   }
 
@@ -784,9 +778,8 @@ class Database {
 
       return result;
     } catch (error) {
-      // eslint-disable-next-line no-console
-      log.error(error);
-      return null;
+      log.error(`FindOne operation failed for ${payload.contract}.${payload.table}:`, error);
+      throw error;
     }
   }
 
@@ -926,9 +919,8 @@ class Database {
 
       return result;
     } catch (error) {
-      // eslint-disable-next-line no-console
-      log.error(error);
-      return null;
+      log.error(`Count operation failed for ${payload.contract}.${payload.table}:`, error);
+      throw error;
     }
   }
 
