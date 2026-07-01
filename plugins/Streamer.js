@@ -38,6 +38,7 @@ let chainIdentifier = '';
 let blockStreamerHandler = null;
 let updaterGlobalPropsHandler = null;
 let lastBlockSentToBlockchain = 0;
+let lastCommittedBlock = 0;
 
 // For block prefetch mechanism
 let capacity = 0;
@@ -340,6 +341,7 @@ const processBlock = async (block) => {
   );
 
   lastBlockSentToBlockchain = block.blockNumber;
+  lastCommittedBlock = block.blockNumber;
 };
 
 const updateGlobalProps = async () => {
@@ -535,7 +537,10 @@ const streamBlocks = async (reject) => {
         } else {
           buffer.clear();
           const msg = `a fork happened between block ${currentHiveBlock - 1} and block ${currentHiveBlock}`;
-          currentHiveBlock = lastBlockSentToBlockchain + 1;
+          currentHiveBlock = lastCommittedBlock + 1;
+          log.warn(
+            `Fork detected, rewinding to block ${currentHiveBlock} (last committed: ${lastCommittedBlock})`,
+          );
           throw new ForkException(msg);
         }
       } else {
