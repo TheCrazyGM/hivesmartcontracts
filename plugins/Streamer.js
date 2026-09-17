@@ -449,7 +449,7 @@ const updateQps = (nodes) => {
 
   if (nextQps !== currentQps) {
     currentQps = nextQps;
-    log.info(`Streamer QPS changed to ${currentQps}`);
+    log.warn(`Streamer QPS changed to ${currentQps}`);
   }
   capacity = currentQps * nodes.length;
 };
