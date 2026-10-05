@@ -20,11 +20,16 @@ let consecutiveCleanupSkips = 0;
 let stopping = false;
 
 const getSyncLag = async () => {
-  const response = await ipc.send({
-    to: STREAMER_PLUGIN_NAME,
-    action: STREAMER_PLUGIN_ACTIONS.GET_SYNC_LAG,
-  });
-  return response ? response.payload : null;
+  try {
+    const response = await ipc.send({
+      to: STREAMER_PLUGIN_NAME,
+      action: STREAMER_PLUGIN_ACTIONS.GET_SYNC_LAG,
+    });
+    return response ? response.payload : null;
+  } catch (error) {
+    console.warn('could not query streamer sync lag:', error.message);
+    return null;
+  }
 };
 
 const manageLightNode = async (cleanupInterval) => {
@@ -77,7 +82,8 @@ const init = async (conf, callback) => {
   } = conf;
 
   adaptiveCleanup = lightNode.adaptiveCleanup === true && streamerEnabled === true;
-  cleanupLagThreshold = Number.isFinite(lightNode.cleanupLagThreshold) && lightNode.cleanupLagThreshold >= 0
+  cleanupLagThreshold = Number.isFinite(lightNode.cleanupLagThreshold)
+    && lightNode.cleanupLagThreshold >= 0
     ? lightNode.cleanupLagThreshold
     : 1000;
   maxConsecutiveCleanupSkips = Number.isInteger(lightNode.maxConsecutiveCleanupSkips)
