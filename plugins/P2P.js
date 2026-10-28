@@ -14,7 +14,11 @@ const net = require('net');
 const { Queue } = require('../libs/Queue');
 const { IPC } = require('../libs/IPC');
 const { Database } = require('../libs/Database');
-const { MAX_PROPOSE_ROUND_RETRIES, getRetryDelay } = require('../libs/util/p2pRetry');
+const {
+  MAX_PROPOSE_ROUND_RETRIES,
+  getRetryDelay,
+  isRetryableTimeoutError,
+} = require('../libs/util/p2pRetry');
 const { calculateRoundHash: calculateBlockRangeHash } = require('../libs/util/roundHash');
 
 const PLUGIN_NAME = 'P2P';
@@ -244,7 +248,7 @@ const proposeRound = async (witness, round, retry = 0) => {
   } catch (error) {
     log.warn(`Error posting to ${witness} / round ${round.round} / ${error}`);
     if (currentRound === round.round
-      && error.toString().indexOf('ETIMEDOUT') > -1
+      && isRetryableTimeoutError(error)
       && retry < MAX_PROPOSE_ROUND_RETRIES) {
       setTimeout(() => {
         console.log(`propose round: retry ${retry + 1}`);

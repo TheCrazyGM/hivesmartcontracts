@@ -9,7 +9,19 @@ const getRetryDelay = (retry, random = Math.random) => {
   return exponentialDelay + Math.floor(random() * RETRY_JITTER_MS);
 };
 
+const isRetryableTimeoutError = (error) => {
+  if (!error) return false;
+  if (error.code === 'ETIMEDOUT' || error.code === 'ECONNABORTED') {
+    return true;
+  }
+  const message = String(error);
+  return message.includes('ETIMEDOUT')
+    || message.includes('ECONNABORTED')
+    || /timeout of \d+ms exceeded/i.test(message);
+};
+
 module.exports = {
   MAX_PROPOSE_ROUND_RETRIES,
   getRetryDelay,
+  isRetryableTimeoutError,
 };
