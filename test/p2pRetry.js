@@ -3,6 +3,7 @@ const assert = require('assert').strict;
 const {
   MAX_PROPOSE_ROUND_RETRIES,
   getRetryDelay,
+  isRetryableTimeoutError,
 } = require('../libs/util/p2pRetry');
 
 describe('P2P round retry backoff', () => {
@@ -23,5 +24,26 @@ describe('P2P round retry backoff', () => {
     const maximumRequestTimeMs = (MAX_PROPOSE_ROUND_RETRIES + 1) * 10000;
     assert.equal(maximumBackoffMs, 58997);
     assert.ok(maximumBackoffMs + maximumRequestTimeMs < 120000);
+  });
+
+  it('detects both OS-level ETIMEDOUT and Axios request timeouts', () => {
+    assert.equal(isRetryableTimeoutError(new Error('connect ETIMEDOUT 1.2.3.4:5001')), true);
+    assert.equal(isRetryableTimeoutError({ code: 'ETIMEDOUT', message: 'socket hang up' }), true);
+    assert.equal(
+      isRetryableTimeoutError({
+        code: 'ECONNABORTED',
+        message: 'timeout of 10000ms exceeded',
+        toString() {
+          return 'AxiosError: timeout of 10000ms exceeded';
+        },
+      }),
+      true,
+    );
+    assert.equal(
+      isRetryableTimeoutError(new Error('AxiosError: timeout of 10000ms exceeded')),
+      true,
+    );
+    assert.equal(isRetryableTimeoutError(new Error('connect ECONNREFUSED 1.2.3.4:5001')), false);
+    assert.equal(isRetryableTimeoutError(null), false);
   });
 });
